@@ -16,7 +16,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
     steps:
       - uses: actions/checkout@v2
       
@@ -53,4 +55,4 @@ jobs:
       - name: Deploy to HuaweiCloud CCI By DevStar
         id: deploy-to-cci-by-devstar
         #uses: azure/webapps-deploy@v2
-        run: echo ${{ steps.build-image.outputs.image }}
+        run: echo ${{needs.build.outputs.image}}
