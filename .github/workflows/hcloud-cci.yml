@@ -1,9 +1,14 @@
+# This workflow will build and push a new container image to HuaweiCloud SWR,
+# and then will deploy a new task to HuaweiCloud CCI By DevStar, when there is a push to the main branch.
+#
+# To use this workflow, you will need to complete the following set-up steps:
+
 name: Deploy to HuaweiCloud CCI(Cloud Container Instance)
 
 on:
   push:
     branches:
-      - main
+      - main1
       
 env:
   REGION_ID: cn-north-4                   # set this to your preferred huaweicloud region, e.g. cn-north-4
