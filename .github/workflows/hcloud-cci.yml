@@ -44,3 +44,13 @@ jobs:
           docker build -t $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG .
           docker push $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG
           echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG"
+          
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+   
+    steps:
+      - name: Deploy to HuaweiCloud CCI By DevStar
+        id: deploy-to-cci-by-devstar
+        #uses: azure/webapps-deploy@v2
+        run: echo ${{ steps.build-image.outputs.image }}
