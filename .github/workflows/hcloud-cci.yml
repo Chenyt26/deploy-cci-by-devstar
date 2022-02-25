@@ -3,7 +3,7 @@ name: Deploy to HuaweiCloud CCI(Cloud Container Instance)
 on:
   push:
     branches:
-      - main1
+      - main
       
 env:
   REGION_ID: cn-north-4                   # set this to your preferred huaweicloud region, e.g. cn-north-4
@@ -19,9 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      #- name: Build with Maven
-      #  id: build-project
-      #  run: mvn package -Dmaven.test.skip=true -U -e -X -B
+      - name: Build with Maven
+        id: build-project
+        run: mvn package -Dmaven.test.skip=true -U -e -X -B
       
       - name: Log in to HuaweiCloud SWR
         uses: huaweicloud/swr-login@v1
