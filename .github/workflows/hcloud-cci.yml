@@ -1,0 +1,40 @@
+name: Deploy to HuaweiCloud CCI(Cloud Container Instance)
+
+on:
+  push:
+    branches:
+      - main1
+      
+env:
+  REGION_ID: cn-north-4                   # set this to your preferred huaweicloud region, e.g. cn-north-4
+  ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}             # set this to your huaweicloud access-key-id
+  ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}               # set this to your huaweicloud access-key-secret
+  SWR_ORGANIZATION:  hcloudcli   # set this to your huaweicloud SWR organization
+
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Log in to HuaweiCloud SWR
+        uses: huaweicloud/swr-login@v1
+        with:
+          region: ${{ env.REGION_ID }} # example: cn-north-4
+          access-key-id: ${{ env.ACCESS_KEY_ID }}
+          access-key-secret: ${{ env.ACCESS_KEY_SECRET }}
+
+      - name: Build, tag, and push image to HuaweiCloud SWR
+        id: build-image
+        env:
+          SWR_REGISTRY: swr.${{ env.REGION_ID }}.myhuaweicloud.com
+          SWR_ORGANIZATION: ${{ env.SWR_ORGANIZATION }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to SWR so that it can
+          docker build -t $SWR_REGISTRY/$SWR_ORGANIZATION:$IMAGE_TAG .
+          docker push $SWR_REGISTRY/$SWR_ORGANIZATION:$IMAGE_TAG
+          echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION:$IMAGE_TAG"
