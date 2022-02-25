@@ -36,9 +36,10 @@ jobs:
           SWR_REGISTRY: swr.${{ env.REGION_ID }}.myhuaweicloud.com
           SWR_ORGANIZATION: ${{ env.SWR_ORGANIZATION }}
           IMAGE_TAG: ${{ github.sha }}
+          IMAGE_NAME: ${{ env.REPO }}
         run: |
           # Build a docker container and
           # push it to SWR so that it can
-          docker build -t $SWR_REGISTRY/$SWR_ORGANIZATION:$IMAGE_TAG .
-          docker push $SWR_REGISTRY/$SWR_ORGANIZATION:$IMAGE_TAG
-          echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION:$IMAGE_TAG"
+          docker build -t $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG
+          echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG"
