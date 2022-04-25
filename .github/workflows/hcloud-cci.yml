@@ -8,7 +8,7 @@ name: Deploy to HuaweiCloud CCI(Cloud Container Instance)
 on:
   push:
     branches:
-      - main1
+      - test
       
 env:
   REGION_ID: cn-north-4                   # set this to your preferred huaweicloud region, e.g. cn-north-4
@@ -19,43 +19,8 @@ env:
 
       
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    
-    outputs:
-      image: ${{ steps.build-image.outputs.image }}
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Build with Maven
-        id: build-project
-        run: mvn package -Dmaven.test.skip=true -U -e -X -B
-      
-      - name: Log in to HuaweiCloud SWR
-        uses: huaweicloud/swr-login@v1
-        with:
-          region: ${{ env.REGION_ID }} # example: cn-north-4
-          access-key-id: ${{ env.ACCESS_KEY_ID }}
-          access-key-secret: ${{ env.ACCESS_KEY_SECRET }}
-
-      - name: Build, tag, and push image to HuaweiCloud SWR
-        id: build-image
-        env:
-          SWR_REGISTRY: swr.${{ env.REGION_ID }}.myhuaweicloud.com
-          SWR_ORGANIZATION: ${{ env.SWR_ORGANIZATION }}
-          IMAGE_TAG: ${{ github.sha }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-        run: |
-          # Build a docker container and
-          # push it to SWR so that it can
-          docker build -t $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG .
-          docker push $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG
-          echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG"
-          
   deploy:
     runs-on: ubuntu-latest
-    needs: build
-   
     steps:
       - name: Deploy to HuaweiCloud CCI By DevStar
         id: deploy-to-cci-by-devstar
@@ -71,4 +36,6 @@ jobs:
           chmod +x ./cci-iam-authenticator
           mv ./cci-iam-authenticator /usr/local/bin
           cci-iam-authenticator generate-kubeconfig --cci-endpoint=https://cci.cn-north-4.myhuaweicloud.com --ak=${INPUT_ACCESS_KEY} --sk=${INPUT_SECRET_KEY}
-          kubectl set image deploy cci-deployment-20223141 container-0=${{needs.build.outputs.image}} -n cci-namespace-70395701
+          kubectl get pods --namespace action jsonpath="{.items[*].spec.containers[*].image}"
+
+
