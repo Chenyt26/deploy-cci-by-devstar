@@ -36,6 +36,6 @@ jobs:
           chmod +x ./cci-iam-authenticator
           mv ./cci-iam-authenticator /usr/local/bin
           cci-iam-authenticator generate-kubeconfig --cci-endpoint=https://cci.cn-north-4.myhuaweicloud.com --ak=${{ secrets.ACCESS_KEY_ID }} --sk=${{ secrets.ACCESS_KEY_SECRET }}
-          kubectl get deployment cci-deployment-20224251 -o=jsonpath='{$.spec.template.spec.containers[*].name}' -n action
+          kubectl get ns | awk '{if (NR > 1) {print $1}}'
 
 
